@@ -1,0 +1,1 @@
+function a5_editor_core(){function n(n,t){return function(n){for(;n&&n instanceof Function;)n=n();return n}(function n(t,r){return r>0?n.bind(null,t+1,r-1):t}.bind(null,n,t))}var n,t,r,u,i;n(1,10),(n=(t=function(t,r){return r>0?n(t+1,r-1):t},u=!1,i=[],function(){if(i.push(arguments),!u){for(u=!0;i.length;)r=t.apply(this,i.shift());return u=!1,r}}))(1,1e5)}
