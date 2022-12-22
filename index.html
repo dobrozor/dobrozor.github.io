@@ -1,142 +1,715 @@
+
 <!DOCTYPE html>
-<html lang='en' class=''>
+<html lang='ru' class=''>
 
 <head>
 
   <meta charset='UTF-8'>
   <title>dobrozor</title>
+  <link rel="icon" type="image/svg" href="https://cloud.mail.ru/public/iVxG/tTnwoSKjc">
 
-  <meta name="robots" content="noindex">
-
-  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
-  <link rel="mask-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
-  <link rel="canonical" href="https://codepen.io/creativeocean/pen/oNzjEYj">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   
-  
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Varela+Round&amp;display=swap">
 
   <style class="INLINE_PEN_STYLESHEET_ID">
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+    * {
+	border: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+:root {
+	--hue: 223;
+	--bg: hsl(var(--hue),90%,90%);
+	--fg: hsl(var(--hue),90%,10%);
+	--primary: hsl(var(--hue),90%,55%);
+	--red: hsl(3,90%,50%);
+	--orange: hsl(33,90%,50%);
+	--green: hsl(153,90%,30%);
+	--purple: hsl(273,90%,50%);
+	--magenta: hsl(303,90%,50%);
+	--trans-dur: 0.3s;
+	font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
+}
+body {
+	background-color: var(--bg);
+	color: var(--fg);
+	font: 1em/1.5 "Varela Round", sans-serif;
+	height: 100vh;
+	display: grid;
+	place-items: center;
+	transition:
+		background-color var(--trans-dur),
+		color var(--trans-dur);
+}
+main {
+	padding: 1.5em 0;
+}
+.message {
+	height: 1.5em;
+	position: relative;
+	text-align: center;
+}
+.message__line {
+	animation: message-fade-in-out 5s linear;
+	opacity: 0;
+	position: absolute;
+	inset: 0;
+	text-align: center;
+}
+.message__line:nth-child(2) { animation-delay: 5s; }
+.message__line:nth-child(3) { animation-delay: 10s; }
+.message__line:nth-child(4) { animation-delay: 15s; }
+.message__line:nth-child(5) { animation-delay: 20s; }
+.message__line:nth-child(6) { animation-delay: 25s; }
+.message__line:nth-child(7) { animation-delay: 30s; }
 
-html, body {
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  font-family: 'Space Mono', monospace;
-  letter-spacing:1.6px;
+.message__line:last-child {
+	animation-name: message-fade-in;
+	animation-delay: 35s;
+	animation-fill-mode: forwards;
+}
+.tower,
+.tower__brick,
+.tower__brick-layer,
+.tower__brick-side,
+.tower__brick-stud,
+.tower__group {
+	transform-style: preserve-3d;
+}
+.tower {
+	margin: 0 auto 1.5em auto;
+	position: relative;
+	perspective: 800px;
+	width: 16em;
+	height: 16em;
+}
+.tower__brick,
+.tower__brick-layer,
+.tower__brick-side,
+.tower__brick-stud,
+.tower__group {
+	position: absolute;
+}
+.tower__brick,
+.tower__brick-side,
+.tower__group {
+	animation-duration: 16s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+.tower__brick,
+.tower__brick-side {
+	background-color: var(--primary);
+}
+.tower__brick {
+	background-image: radial-gradient(100% 100% at center,hsla(0,0%,0%,0.3) 0.3em,hsla(0,0%,0%,0) 0.3em);
+	background-size: 1em 1em;
+	width: 2em;
+	height: 1em;
+}
+.tower__brick-layer--4 {
+	transform: translateZ(4.8em);
+}
+.tower__brick-layer--3 {
+	transform: translateZ(3.6em);
+}
+.tower__brick-layer--2 {
+	transform: translateZ(2.4em);
+}
+.tower__brick-layer--1 {
+	transform: translateZ(1.2em);
+}
+.tower__brick-layer---1 {
+	transform: translateZ(-1.2em);
+}
+.tower__brick-layer---2 {
+	transform: translateZ(-2.4em);
+}
+.tower__brick-layer---3 {
+	transform: translateZ(-3.6em);
+}
+.tower__brick-side {
+	bottom: 100%;
+	left: 0;
+	width: 100%;
+	height: 1.2em;
+	transform: rotateX(90deg);
+	transform-origin: 50% 100%;
+}
+.tower__brick-side:nth-child(2) {
+	top: 0;
+	bottom: auto;
+	left: 100%;
+	width: 1.2em;
+	height: 100%;
+	transform: rotateY(90deg);
+	transform-origin: 0 50%;
+}
+.tower__brick-side:nth-child(3) {
+	top: 100%;
+	left: 0;
+	width: 100%;
+	height: 1.2em;
+	transform: rotateX(-90deg);
+	transform-origin: 50% 0;
+}
+.tower__brick-side:nth-child(4) {
+	top: 0;
+	right: 100%;
+	bottom: auto;
+	left: auto;
+	width: 1.2em;
+	height: 100%;
+	transform: rotateY(-90deg);
+	transform-origin: 100% 50%;
+}
+.tower__brick-side:nth-child(even),
+.tower__brick--90 .tower__brick-side:nth-child(odd),
+.tower__brick--135 .tower__brick-side:nth-child(odd),
+.tower__brick--270 .tower__brick-side:nth-child(odd),
+.tower__brick--315 .tower__brick-side:nth-child(odd) {
+	animation-name: brick-side-1;
+	filter: brightness(0.5);
+}
+.tower__brick-side:nth-child(odd),
+.tower__brick--90 .tower__brick-side:nth-child(even),
+.tower__brick--135 .tower__brick-side:nth-child(even),
+.tower__brick--270 .tower__brick-side:nth-child(even),
+.tower__brick--315 .tower__brick-side:nth-child(even) {
+	animation-name: brick-side-2;
+	filter: brightness(0.75);
+}
+.tower__brick-stud {
+	background-color: inherit;
+	border-radius: 50%;
+	top: 0.2em;
+	left: 0.2em;
+	width: 0.6em;
+	height: 0.6em;
+	transform: translateZ(0.2em);
+}
+.tower__brick-stud:nth-child(6) {
+	left: 1.2em;
+}
+.tower__brick--0 {
+	transform: translate3d(-1.5em,-1.5em,0);
+}
+.tower__brick--45 {
+	transform: translate3d(-0.5em,-1.5em,0);
+}
+.tower__brick--90 {
+	transform: translate3d(0,-1em,0) rotateZ(90deg);
+}
+.tower__brick--135 {
+	transform: translate3d(0,0,0) rotateZ(90deg);
+}
+.tower__brick--180 {
+	transform: translate3d(-0.5em,0.5em,0);
+}
+.tower__brick--225 {
+	transform: translate3d(-1.5em,0.5em,0);
+}
+.tower__brick--270 {
+	transform: translate3d(-2em,0,0) rotateZ(-90deg);
+}
+.tower__brick--315 {
+	transform: translate3d(-2em,-1em,0) rotateZ(-90deg);
+}
+.tower__brick--red,
+.tower__brick--red .tower__brick-side {
+	background-color: var(--red);
+}
+.tower__brick--orange,
+.tower__brick--orange .tower__brick-side {
+	background-color: var(--orange);
+}
+.tower__brick--green,
+.tower__brick--green .tower__brick-side {
+	background-color: var(--green);
+}
+.tower__brick--purple,
+.tower__brick--purple .tower__brick-side {
+	background-color: var(--purple);
+}
+.tower__brick--magenta,
+.tower__brick--magenta .tower__brick-side {
+	background-color: var(--magenta);
+}
+.tower__brick--move1 { animation-name: brick-move-1; }
+.tower__brick--move2 { animation-name: brick-move-2; }
+.tower__brick--move3 { animation-name: brick-move-3; }
+.tower__brick--move4 { animation-name: brick-move-4; }
+.tower__brick--move5 { animation-name: brick-move-5; }
+.tower__brick--move6 { animation-name: brick-move-6; }
+.tower__brick--move7 { animation-name: brick-move-7; }
+.tower__brick--move8 { animation-name: brick-move-8; }
+.tower__brick--move9 { animation-name: brick-move-9; }
+.tower__brick--move10 { animation-name: brick-move-10; }
+.tower__brick--move11 { animation-name: brick-move-11; }
+.tower__brick--move12 { animation-name: brick-move-12; }
+.tower__brick--move13 { animation-name: brick-move-13; }
+.tower__brick--move14 { animation-name: brick-move-14; }
+.tower__brick--move15 { animation-name: brick-move-15; }
+.tower__brick--move16 { animation-name: brick-move-16; }
+
+.tower__group {
+	animation-name: brick-group;
+	top: 50%;
+	left: 50%;
+	transform: rotateX(45deg) rotateZ(45deg);
 }
 
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: hsl(var(--hue),90%,10%);
+		--fg: hsl(var(--hue),90%,90%);
+	}
+}
 
+/* Animations */
+@keyframes brick-group {
+	from { transform: rotateX(45deg) rotateZ(0.125turn) translateZ(0); }
+	to { transform: rotateX(45deg) rotateZ(2.125turn) translateZ(-4.8em); }
+}
+@keyframes brick-side-1 {
+	from, 25%, 50%, 75%, to { filter: brightness(0.5); }
+	12.5%, 37.5%, 62.5%, 87.5% { filter: brightness(0.75); }
+}
+@keyframes brick-side-2 {
+	from, 25%, 50%, 75%, to { filter: brightness(0.75); }
+	12.5%, 37.5%, 62.5%, 87.5% { filter: brightness(0.5); }
+}
+@keyframes brick-move-1 {
+	from { animation-timing-function: ease-in; transform: translate3d(0,0,0) rotateZ(90deg); }
+	1.25% { animation-timing-function: linear; transform: translate3d(0,0,-0.4em) rotateZ(90deg); }
+	2.5% { transform: translate3d(2em,0,-0.4em) rotateZ(90deg); }
+	3.75% { transform: translate3d(2em,0,10em) rotateZ(90deg); }
+	5% { animation-timing-function: ease-out; transform: translate3d(0,0,10em) rotateZ(90deg); }
+	6.25%, to { transform: translate3d(0,0,9.6em) rotateZ(90deg); }
+}
+@keyframes brick-move-2 {
+	from, 6.25% { animation-timing-function: ease-in; transform: translate3d(-0.5em,-1.5em,0); }
+	7.5% { animation-timing-function: linear; transform: translate3d(-0.5em,-1.5em,-0.4em); }
+	8.75% { transform: translate3d(-0.5em,-3.5em,-0.4em); }
+	10% { transform: translate3d(-0.5em,-3.5em,10em); }
+	11.25% { animation-timing-function: ease-out; transform: translate3d(-0.5em,-1.5em,10em); }
+	12.5%, to { transform: translate3d(-0.5em,-1.5em,9.6em); }
+}
+@keyframes brick-move-3 {
+	from, 12.5% { animation-timing-function: ease-in; transform: translate3d(-2em,-1em,0) rotateZ(-90deg); }
+	13.75% { animation-timing-function: linear; transform: translate3d(-2em,-1em,-0.4em) rotateZ(-90deg); }
+	15% { transform: translate3d(-4em,-1em,-0.4em) rotateZ(-90deg); }
+	16.25% { transform: translate3d(-4em,-1em,10em) rotateZ(-90deg); }
+	17.5% { animation-timing-function: ease-out; transform: translate3d(-2em,-1em,10em) rotateZ(-90deg); }
+	18.75%, to { transform: translate3d(-2em,-1em,9.6em) rotateZ(-90deg); }
+}
+@keyframes brick-move-4 {
+	from, 18.75% { animation-timing-function: ease-in; transform: translate3d(-1.5em,0.5em,0); }
+	20% { animation-timing-function: linear; transform: translate3d(-1.5em,0.5em,-0.4em); }
+	21.25% { transform: translate3d(-1.5em,2.5em,-0.4em); }
+	22.5% { transform: translate3d(-1.5em,2.5em,10em); }
+	23.75% { animation-timing-function: ease-out; transform: translate3d(-1.5em,0.5em,10em); }
+	25%, to { transform: translate3d(-1.5em,0.5em,9.6em); }
+}
+@keyframes brick-move-5 {
+	from, 25% { animation-timing-function: ease-in; transform: translate3d(0,-1em,0) rotateZ(90deg); }
+	26.25% { animation-timing-function: linear; transform: translate3d(0,-1em,-0.4em) rotateZ(90deg); }
+	27.5% { transform: translate3d(2em,-1em,-0.4em) rotateZ(90deg); }
+	28.75% { transform: translate3d(2em,-1em,10em) rotateZ(90deg); }
+	30% { animation-timing-function: ease-out; transform: translate3d(0,-1em,10em) rotateZ(90deg); }
+	31.25%, to { transform: translate3d(0,-1em,9.6em) rotateZ(90deg); }
+}
+@keyframes brick-move-6 {
+	from, 31.25% { animation-timing-function: ease-in; transform: translate3d(-1.5em,-1.5em,0); }
+	32.5% { animation-timing-function: linear; transform: translate3d(-1.5em,-1.5em,-0.4em); }
+	33.75% { transform: translate3d(-1.5em,-3.5em,-0.4em); }
+	35% { transform: translate3d(-1.5em,-3.5em,10em); }
+	36.25% { animation-timing-function: ease-out; transform: translate3d(-1.5em,-1.5em,10em); }
+	37.5%, to { transform: translate3d(-1.5em,-1.5em,9.6em); }
+}
+@keyframes brick-move-7 {
+	from, 37.5% { animation-timing-function: ease-in; transform: translate3d(-2em,0,0) rotateZ(-90deg); }
+	38.75% { animation-timing-function: linear; transform: translate3d(-2em,0,-0.4em) rotateZ(-90deg); }
+	40% { transform: translate3d(-4em,0,-0.4em) rotateZ(-90deg); }
+	41.25% { transform: translate3d(-4em,0,10em) rotateZ(-90deg); }
+	42.5% { animation-timing-function: ease-out; transform: translate3d(-2em,0,10em) rotateZ(-90deg); }
+	43.75%, to { transform: translate3d(-2em,0,9.6em) rotateZ(-90deg); }
+}
+@keyframes brick-move-8 {
+	from, 43.75% { animation-timing-function: ease-in; transform: translate3d(-0.5em,0.5em,0); }
+	45% { animation-timing-function: linear; transform: translate3d(-0.5em,0.5em,-0.4em); }
+	46.25% { transform: translate3d(-0.5em,2.5em,-0.4em); }
+	47.5% { transform: translate3d(-0.5em,2.5em,10em); }
+	48.75% { animation-timing-function: ease-out; transform: translate3d(-0.5em,0.5em,10em); }
+	50%, to { transform: translate3d(-0.5em,0.5em,9.6em); }
+}
+@keyframes brick-move-9 {
+	from, 50% { animation-timing-function: ease-in; transform: translate3d(0,0,0) rotateZ(90deg); }
+	51.25% { animation-timing-function: linear; transform: translate3d(0,0,-0.4em) rotateZ(90deg); }
+	52.5% { transform: translate3d(2em,0,-0.4em) rotateZ(90deg); }
+	53.75% { transform: translate3d(2em,0,10em) rotateZ(90deg); }
+	55% { animation-timing-function: ease-out; transform: translate3d(0,0,10em) rotateZ(90deg); }
+	56.25%, to { transform: translate3d(0,0,9.6em) rotateZ(90deg); }
+}
+@keyframes brick-move-10 {
+	from, 56.25% { animation-timing-function: ease-in; transform: translate3d(-0.5em,-1.5em,0); }
+	57.5% { animation-timing-function: linear; transform: translate3d(-0.5em,-1.5em,-0.4em); }
+	58.75% { transform: translate3d(-0.5em,-3.5em,-0.4em); }
+	60% { transform: translate3d(-0.5em,-3.5em,10em); }
+	61.25% { animation-timing-function: ease-out; transform: translate3d(-0.5em,-1.5em,10em); }
+	62.5%, to { transform: translate3d(-0.5em,-1.5em,9.6em); }
+}
+@keyframes brick-move-11 {
+	from, 62.5% { animation-timing-function: ease-in; transform: translate3d(-2em,-1em,0) rotateZ(-90deg); }
+	63.75% { animation-timing-function: linear; transform: translate3d(-2em,-1em,-0.4em) rotateZ(-90deg); }
+	65% { transform: translate3d(-4em,-1em,-0.4em) rotateZ(-90deg); }
+	66.25% { transform: translate3d(-4em,-1em,10em) rotateZ(-90deg); }
+	67.5% { animation-timing-function: ease-out; transform: translate3d(-2em,-1em,10em) rotateZ(-90deg);  }
+	68.75%, to { transform: translate3d(-2em,-1em,9.6em) rotateZ(-90deg); }
+}
+@keyframes brick-move-12 {
+	from, 68.75% { animation-timing-function: ease-in; transform: translate3d(-1.5em,0.5em,0); }
+	70% { animation-timing-function: linear; transform: translate3d(-1.5em,0.5em,-0.4em); }
+	71.25% { transform: translate3d(-1.5em,2.5em,-0.4em);  }
+	72.5% { transform: translate3d(-1.5em,2.5em,10em); }
+	73.75% { animation-timing-function: ease-out; transform: translate3d(-1.5em,0.5em,10em); }
+	75%, to { transform: translate3d(-1.5em,0.5em,9.6em); }
+}
+@keyframes brick-move-13 {
+	from, 75% { animation-timing-function: ease-in; transform: translate3d(0,-1em,0) rotateZ(90deg); }
+	76.25% { animation-timing-function: linear; transform: translate3d(0,-1em,-0.4em) rotateZ(90deg);  }
+	77.5% { transform: translate3d(2em,-1em,-0.4em) rotateZ(90deg); }
+	78.75% { transform: translate3d(2em,-1em,10em) rotateZ(90deg); }
+	80% { animation-timing-function: ease-out; transform: translate3d(0,-1em,10em) rotateZ(90deg); }
+	81.25%, to { transform: translate3d(0,-1em,9.6em) rotateZ(90deg); }
+}
+@keyframes brick-move-14 {
+	from, 81.25% { animation-timing-function: ease-in; transform: translate3d(-1.5em,-1.5em,0); }
+	82.5% { animation-timing-function: linear; transform: translate3d(-1.5em,-1.5em,-0.4em); }
+	83.75% { transform: translate3d(-1.5em,-3.5em,-0.4em); }
+	85% { transform: translate3d(-1.5em,-3.5em,10em); }
+	86.25% { animation-timing-function: ease-out; transform: translate3d(-1.5em,-1.5em,10em); }
+	87.5%, to { transform: translate3d(-1.5em,-1.5em,9.6em); }
+}
+@keyframes brick-move-15 {
+	from, 87.5% { animation-timing-function: ease-in; transform: translate3d(-2em,0,0) rotateZ(-90deg); }
+	88.75% { animation-timing-function: linear; transform: translate3d(-2em,0,-0.4em) rotateZ(-90deg); }
+	90% { transform: translate3d(-4em,0,-0.4em) rotateZ(-90deg); }
+	91.25% { transform: translate3d(-4em,0,10em) rotateZ(-90deg); }
+	92.5% { animation-timing-function: ease-out; transform: translate3d(-2em,0,10em) rotateZ(-90deg); }
+	93.75%, to { transform: translate3d(-2em,0,9.6em) rotateZ(-90deg); }
+}
+@keyframes brick-move-16 {
+	from, 93.75% { animation-timing-function: ease-in; transform: translate3d(-0.5em,0.5em,0); }
+	95% { animation-timing-function: linear; transform: translate3d(-0.5em,0.5em,-0.4em); }
+	96.25% { transform: translate3d(-0.5em,2.5em,-0.4em); }
+	97.5% { transform: translate3d(-0.5em,2.5em,10em); }
+	98.75% { animation-timing-function: ease-out; transform: translate3d(-0.5em,0.5em,10em); }
+	to { transform: translate3d(-0.5em,0.5em,9.6em); }
+}
+@keyframes message-fade-in {
+	from { opacity: 0; }
+	6%, to { opacity: 1; }
+}
+@keyframes message-fade-in-out {
+	from, to { opacity: 0; }
+	6%, 94% { opacity: 1; }
+}
   </style>
 
   
-
 </head>
 
 <body>
-  <svg width="100%" height="100%">  
-  <defs>
-    
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="65%">
-      <stop offset="10%" stop-color="#004476" />
-      <stop offset="90%" stop-color="#006fbe" />
-    </linearGradient>
-    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="85%">
-      <stop offset="0%" stop-color="#f5eacc" />
-      <stop offset="80%" stop-color="#e0c677" />
-      <stop offset="110%" stop-color="#ebd8a0" />      
-    </linearGradient>
-    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="85%">
-      <stop offset="0%" stop-color="#54e2fe" />
-      <stop offset="80%" stop-color="#049afd" />
-      <stop offset="110%" stop-color="#2aaffc" />      
-    </linearGradient>
-    <linearGradient id="grad4" x1="0%" y1="0%" x2="80%" y2="70%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.75)" />
-      <stop offset="90%" stop-color="rgba(255,255,255,0.3)" />
-    </linearGradient>
-    
-    <pattern id="cardBg" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-      <image opacity="0.5" width="100" height="100" xlink:href="https://assets.codepen.io/721952/whiteNoise2.png" />
-      <image class="fillLight" opacity="0.5" width="100" height="100" xlink:href="https://assets.codepen.io/721952/whiteNoise.png" />
-    </pattern>
-      
-    <mask id="m">
-      <rect class="card" fill="#fff" width="340" height="540" rx="30" ry="30" />
-    </mask>
-    
-  </defs>
+  <main>
+	<div class="tower">
+		<div class="tower__group">
+			<div class="tower__brick-layer tower__brick-layer--4">
+				<div class="tower__brick tower__brick--0">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--90 tower__brick--red">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--180 tower__brick--orange">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--270 tower__brick--purple">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer--3">
+				<div class="tower__brick tower__brick--45 tower__brick--magenta">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--135">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--225 tower__brick--green">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--315 tower__brick--orange">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer--2">
+				<div class="tower__brick tower__brick--0 tower__brick--red">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--90 tower__brick--green">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--180 tower__brick--purple">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--270">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer--1">
+				<div class="tower__brick tower__brick--45 tower__brick--purple">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--135 tower__brick--magenta">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--225 tower__brick--red">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--315 tower__brick--green">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer">
+				<div class="tower__brick tower__brick--0 tower__brick--move14">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--90 tower__brick--red tower__brick--move13">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--180 tower__brick--orange tower__brick--move16">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--270 tower__brick--purple tower__brick--move15">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer---1">
+				<div class="tower__brick tower__brick--45 tower__brick--move10 tower__brick--magenta">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--135 tower__brick--move9">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--225 tower__brick--green tower__brick--move12">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--315 tower__brick--orange tower__brick--move11">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer---2">
+				<div class="tower__brick tower__brick--0 tower__brick--red tower__brick--move6">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--90 tower__brick--green tower__brick--move5">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--180 tower__brick--purple tower__brick--move8">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--270 tower__brick--move7">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+			<div class="tower__brick-layer tower__brick-layer---3">
+				<div class="tower__brick tower__brick--45 tower__brick--purple tower__brick--move2">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--135 tower__brick--magenta tower__brick--move1">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--225 tower__brick--red tower__brick--move4">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+				<div class="tower__brick tower__brick--315 tower__brick--green tower__brick--move3">
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-side"></div>
+					<div class="tower__brick-stud"></div>
+					<div class="tower__brick-stud"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="message">
+		<p class="message__line">Загрузка...</p>
+		<p class="message__line">Собираю по кусочкам…</p>
+		<p class="message__line">На создание может потребоваться больше времени, чем на Звезду смерти...</p>
+		<p class="message__line">Точно, сайт ещё не готов</p>
+		<p class="message__line">404 ошибка</p>
+	</div>
+</main>
   
-  <rect fill="url(#grad1)" width="100%" height="100%" />
-  
-  <g class="main">
-    <circle class="ball bg" fill="url(#grad2)" cx="120" cy="130" r="130"/>
-    <circle class="ball bg" fill="url(#grad3)" cx="550" cy="410" r="210"/>
-    <g class="blur" mask="url(#m)">
-      <image class="bg" x="33" y="7" width="700" height="600" xlink:href="https://assets.codepen.io/721952/bgBlur.jpg" />
-    </g>
-    <g class="card">
-      <rect fill="none" stroke="#ccc" opacity="0.0" stroke-width="3" width="341" height="541" rx="31" ry="31" opacity="0.0" />
-      <rect fill="url(#cardBg)" width="340" height="540" rx="30" ry="30" opacity="0.8" />
-      <text class="numTxt" fill="#f0f0f0" font-size="23">Зоренко Илья</text>
-      <text class="nameTxt" fill="#e4e4f4" font-size="15">dobrozor</text>      
-      <g class="chip">
-        <rect fill="url(#grad2)" opacity="0" width="58" height="76.5" rx="9" ry="9" />
-        <path fill="none" opacity="0" stroke="#c9b678" d="M58,54.05 M0,25.72c2.11,0.21,3.75,0.47,4.03,0.74c2.92,3.64,5.83,7.28,8.67,10.98c0.77,1,1.52,1.72,2.89,1.47c0.95-0.18,1.28,0.3,1.27,1.25c-0.04,4.03-0.01,8.03-0.02,12.07c8.44,0,16.73,0,25.08,0c0-8.43,0-25.32,0-25.32l-26.77,0c0,0-1.95,0-1.95-1.96c-0.4-1.85-0.4-14.9-0.34-24.95 M45.96,0c0,8.65,0.01,18.65-0.01,24.19c-0.01,2.9,0.27,2.55-2.38,2.84c0,3.91,0,7.82,0,12.17c4.69-3.07,7.28-8.53,11.07-12.63C55,26.06,56.3,25.72,58,25.5 M58,54.05c-0.55,0-0.89,0.01-0.89,0.01c-2.46,0.26-9.33-10.83-12.02-13.2c-0.41-0.36-1.57,0.2-1.57,0.2s-0.02,7.37-0.02,11.13c2.56,0.32,2.56,0.32,2.56,2.77c0,4.4,0,12.9,0,21.04 M13.1,76c0.01-8.57,0.04-17.77,0.07-22.53c-0.01-0.82,0.36-1.2,1.17-1.17c0.28,0.01,1.03-0.06,1.03-0.06l0.05-11.81c0,0-1.73,0.15-2.12,0.72c-0.39,0.57-6.16,7.63-9.18,11.5C3.9,52.85,2.19,53.11,0,53.35"/>
-      </g>
-      <path class="knot" opacity="0.82" fill="#eee" stroke="#eee" stroke-width="0.2" d="M69.15,24.85H48.73a10,10,0,0,0-1.34.16c0,5.4-.08,10.72,0,16a24.22,24.22,0,0,1-15,23C16.78,70.12.5,58.71,0,42-.32,31.59,8.21,18.6,23.68,18.23c5.48-.16,11,0,16.64,0,0-.81.12-1.54.12-2.23V5a11.56,11.56,0,0,1,.37-3c.65-1.54,1.3-2,2.56-2A3.17,3.17,0,0,1,46.7,2a6.87,6.87,0,0,1,.4,2.56c0,4.42,0,8.89,0,13.56h28c1.62,0,3.45-.12,4.26,1.66s0,3.37-1.14,4.84Q65.88,40,53.6,55.34c-.65.85-1.3,1.7-2.32,3H75.77c2.59,0,3.77.94,3.89,2.84.17,2.56-.81,3.7-3.57,3.78-4.14.12-8.24.08-12.38.08H45.44c-1.71,0-3.45,0-4.35-1.91s.09-3.25,1.18-4.59Q54.69,43,67,27.45A26.32,26.32,0,0,0,69.15,24.85Zm-45.39.2a16.83,16.83,0,0,0-17,16.77c-.16,9.46,7.06,16.81,16.72,17A16.56,16.56,0,0,0,40.57,42,16.7,16.7,0,0,0,23.76,25.05ZM40.4,28.46A3.64,3.64,0,0,0,44,24.65a3.68,3.68,0,0,0-7.35.16A3.68,3.68,0,0,0,40.4,28.46Z"/>
-  </g>
-</svg>
-  
-
-  <script>
-    gsap.timeline()
-    .set('.logo',     { x:215, y:482 })
-    .set('.chip',     { x:148, y:66 })
-    .set('.knot',     { x:22, y:250 })
-    .set('.numTxt',   { x:22, y:375 })
-    .set('.nameTxt',  { x:22, y:410 })
-    .add(centerMain(), 0.2)
-    .from('.ball',    { duration:2,
-                        transformOrigin:'50% 50%',
-                        scale:0,
-                        opacity:0,
-                        ease:'elastic',
-                        stagger:0.2
-                      }, 0)
-    .fromTo('.card',  { x:200,
-                        y:40,
-                        transformOrigin:'50% 50%',
-                        rotation:-4,
-                        skewX:10,
-                        skewY:4,
-                        scale:2,
-                        opacity:0
-                      },{
-                        duration:1.3,
-                        skewX:0,
-                        skewY:0,
-                        scale:1,
-                        opacity:1,
-                        ease:'power4.inOut'
-                      }, 0.2)
-        
-
-
-function centerMain(){ gsap.set('.main', {x:'50%', xPercent:-50, y:'50%', yPercent:-50}); }
-window.onresize = centerMain;
-
-window.onmousemove = (e)=> {
-  let winPercent = { x:e.clientX/window.innerWidth, y:e.clientY/window.innerHeight },
-      distFromCenter = 1 - Math.abs((e.clientX - window.innerWidth/2)/window.innerWidth*2);
-  
-  gsap.timeline({defaults:{duration:0.5, overwrite:'auto'}})
-      .to('.card',        {rotation:-7+9*winPercent.x}, 0)
-      .to('.fillLight',   {opacity:distFromCenter}, 0)  
-      .to('.bg',          {x:100-200*winPercent.x, y:20-40*winPercent.y}, 0) 
-}
-    </script>
 </body>
 
 </html>
