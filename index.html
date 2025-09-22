@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доброзор - Сайт-визитка</title>
+    <!-- Подключаем Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Скрываем полосы прокрутки */
+        }
+        
+        .glass {
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 1s ease-in-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 antialiased leading-relaxed">
+    <!-- 3D-сцена будет отображаться здесь -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 z-0 w-full h-full"></canvas>
+
+    <!-- Основной контент -->
+    <div class="relative z-10 container mx-auto p-4 sm:p-8 flex flex-col items-center justify-center min-h-screen">
+        <div class="max-w-4xl w-full space-y-12">
+
+            <!-- Приветствие -->
+            <section class="glass p-6 sm:p-10 rounded-3xl fade-in-up">
+                <div class="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8">
+                    <div class="flex-shrink-0">
+                        <img src="https://avatars.githubusercontent.com/u/105580858?v=4" alt="Аватар Доброзора" class="h-28 w-28 sm:h-36 sm:w-36 rounded-full border-4 border-orange-400">
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-orange-400 mb-2">👋 Привет, меня зовут Илья!</h1>
+                        <p class="text-xl sm:text-2xl text-gray-50 font-medium">
+                            Я <span class="text-orange-400">вайб-программер</span>, Python-разработчик, Fullstack Developer.
+                        </p>
+                        <ul class="mt-4 text-sm sm:text-base text-gray-300 space-y-2">
+                            <li><span class="text-orange-400">🔭</span> Сейчас я работаю над несколькими проектами</li>
+                            <li><span class="text-orange-400">🌱</span> В настоящее время изучаю питон</li>
+                            <li><span class="text-orange-400">⚡</span> Интересный факт - мне не нравится деловой язык, потому всю инфу я пишу так, будто ты мой друг</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Мои проекты -->
+            <section class="glass p-6 sm:p-10 rounded-3xl fade-in-up">
+                <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center">💻 Мои проекты</h2>
+                <div id="projects-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Кнопки проектов будут добавлены сюда с помощью JavaScript -->
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Подключаем Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Массив с проектами. Добавляй сюда новые объекты для новых проектов!
+        const projects = [
+            {
+                title: "Продажник звезд на фанпее",
+                url: "https://github.com/dobrozor/FunPaySaller"
+            },
+            {
+                title: "Бот для продажи звезд тг",
+                url: "https://github.com/dobrozor/tg_buy_stars"
+            },
+            {
+                title: "Парсер для Профи.ру",
+                url: "https://github.com/dobrozor/parser_profiru"
+            },
+            {
+                title: "Скачиватель видос с сайтов",
+                url: "https://github.com/dobrozor/DOBRO_LOADER"
+            }
+        ];
+
+        // Функция для динамического создания кнопок
+        function generateProjectButtons() {
+            const container = document.getElementById('projects-container');
+            projects.forEach(project => {
+                const link = document.createElement('a');
+                link.href = project.url;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+
+                const button = document.createElement('button');
+                button.textContent = project.title;
+                button.className = "w-full p-4 rounded-xl text-center font-semibold text-lg transition-transform transform hover:scale-105 shadow-xl glass bg-gradient-to-r from-orange-400 to-amber-500 text-gray-950 hover:from-orange-500 hover:to-amber-600";
+                
+                link.appendChild(button);
+                container.appendChild(link);
+            });
+        }
+        
+        // --- Логика 3D-сцены ---
+        let scene, camera, renderer;
+        let objects = [];
+        let controls;
+
+        function init3D() {
+            const canvas = document.getElementById('bg-canvas');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Добавляем освещение
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xff8c00, 2); // Яркий оранжевый свет
+            pointLight.position.set(0, 0, 10);
+            scene.add(pointLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xff8c00, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            // Создаем массив с различными геометриями для разнообразия
+            const geometries = [
+                new THREE.SphereGeometry(1.5, 32, 32),
+                new THREE.TorusGeometry(1, 0.4, 16, 100),
+                new THREE.IcosahedronGeometry(1.5, 0),
+                new THREE.BoxGeometry(2, 2, 2)
+            ];
+
+            // Создаем "стеклянный" материал
+            const material = new THREE.MeshPhysicalMaterial({
+                color: 0xff8c00, // Яркий оранжевый цвет
+                roughness: 0,
+                transmission: 1, // Прозрачность
+                thickness: 0.5,
+                metalness: 0.2,
+                clearcoat: 1,
+                clearcoatRoughness: 0.1,
+                opacity: 0.8,
+                transparent: true
+            });
+
+            // Генерируем множество объектов со случайными параметрами
+            for (let i = 0; i < 50; i++) {
+                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+                const obj = new THREE.Mesh(geometry, material);
+                
+                // Случайная позиция в пределах определенной области
+                obj.position.x = (Math.random() - 0.5) * 50;
+                obj.position.y = (Math.random() - 0.5) * 50;
+                obj.position.z = (Math.random() - 0.5) * 50;
+
+                // Случайный масштаб
+                const scale = Math.random() * 2 + 0.5;
+                obj.scale.set(scale, scale, scale);
+
+                // Случайное начальное вращение
+                obj.rotation.x = Math.random() * Math.PI;
+                obj.rotation.y = Math.random() * Math.PI;
+
+                objects.push(obj);
+                scene.add(obj);
+            }
+
+            camera.position.z = 10;
+
+            // Управление камерой
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+        }
+
+        // Анимационный цикл
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            // Вращаем объекты
+            objects.forEach(obj => {
+                obj.rotation.x += 0.001;
+                obj.rotation.y += 0.001;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        // Запускаем всё при загрузке страницы
+        window.onload = function() {
+            generateProjectButtons();
+            init3D();
+            animate();
+        };
+    </script>
+</body>
+</html>
