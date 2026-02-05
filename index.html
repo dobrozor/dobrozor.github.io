@@ -1,240 +1,310 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta name="urlpay-verify" content="87794ec54458ad93e2302ed2c12f486a">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Доброзор - Сайт-визитка</title>
-    <!-- Подключаем Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>///Илья//Зоренко///</title>
+    
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/105580858?v=4" type="image/x-icon">
+    
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Скрываем полосы прокрутки */
-        }
-        
-        .glass {
-            background-color: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        :root {
+            --bg: #030303;
+            --card-bg: rgba(10, 10, 10, 0.9);
+            --text: #e0e0e0;
+            --accent: #ff003c; 
+            --accent-2: #00f3ff;
+            --border: rgba(255, 255, 255, 0.1);
+            --font-display: 'Syncopate', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
-        .fade-in-up {
-            animation: fadeInUp 1s ease-in-out;
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-display);
+            overflow: hidden;
+            width: 100vw; height: 100vh;
         }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .scanlines { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 50%); background-size: 100% 5px; pointer-events: none; z-index: 10; }
+        .noise { position: fixed; inset: 0; z-index: 12; opacity: 0.05; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+        .hud { position: fixed; inset: 2rem; z-index: 20; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--font-code); font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+        .hud-line { flex: 1; height: 1px; background: rgba(255,255,255,0.2); margin: 0 1rem; }
+
+        .viewport { position: fixed; inset: 0; perspective: 1000px; z-index: 1; overflow: hidden; }
+        .world { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+        .item { position: absolute; top: 0; left: 0; transform-style: preserve-3d; pointer-events: none; }
+
+        .card {
+            width: 320px; height: 460px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex; flex-direction: column;
+            backdrop-filter: blur(15px);
+            transform: translate(-50%, -50%);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            pointer-events: none;
         }
-        
-        canvas {
+
+        .item.active .card { pointer-events: all; }
+        .card:hover { border-color: var(--accent); box-shadow: 0 0 30px rgba(255, 0, 60, 0.4); }
+
+        .card-header { font-family: var(--font-code); color: var(--accent); font-size: 0.7rem; margin-bottom: 1rem; display: flex; justify-content: space-between; }
+        .card h2 { font-size: 1.5rem; margin: 0 0 1rem 0; line-height: 1; text-transform: uppercase; color: #fff; }
+        .card p { font-family: var(--font-code); font-size: 0.85rem; line-height: 1.4; color: #bbb; margin: 0; }
+
+        .card-img { width: 100%; height: 180px; background: #111; margin: 1rem 0; border: 1px solid var(--border); overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
+        .card:hover .card-img img { filter: grayscale(0); }
+
+        .card-btn {
+            margin-top: auto;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.8rem;
+            font-family: var(--font-code);
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            text-decoration: none;
             display: block;
+            z-index: 100;
         }
+        .card-btn:hover { background: var(--accent-2); color: #000; }
+
+        .big-text {
+            font-size: 14vw; font-weight: 800; color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.15);
+            text-transform: uppercase; white-space: nowrap;
+            transform: translate(-50%, -50%); pointer-events: none;
+            mix-blend-mode: screen;
+            transition: text-shadow 0.1s;
+        }
+
+        .star { position: absolute; width: 2px; height: 2px; background: white; pointer-events: none; }
+        .scroll-proxy { height: 20000vh; position: absolute; width: 100%; z-index: -1; }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-200 antialiased leading-relaxed">
-    <!-- 3D-сцена будет отображаться здесь -->
-    <canvas id="bg-canvas" class="fixed top-0 left-0 z-0 w-full h-full"></canvas>
+<body>
 
-    <!-- Основной контент -->
-    <div class="relative z-10 container mx-auto p-4 sm:p-8 flex flex-col items-center justify-center min-h-screen">
-        <div class="max-w-4xl w-full space-y-12">
+    <div class="scanlines"></div>
+    <div class="noise"></div>
 
-            <!-- Приветствие -->
-            <section class="glass p-6 sm:p-10 rounded-3xl fade-in-up">
-                <div class="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8">
-                    <div class="flex-shrink-0">
-                        <img src="https://avatars.githubusercontent.com/u/105580858?v=4" alt="Аватар Доброзора" class="h-28 w-28 sm:h-36 sm:w-36 rounded-full border-4 border-orange-400">
-                    </div>
-                    <div class="text-center sm:text-left">
-                        <h1 class="text-3xl sm:text-4xl font-extrabold text-orange-400 mb-2">👋 Привет, меня зовут Илья!</h1>
-                        <p class="text-xl sm:text-2xl text-gray-50 font-medium">
-                            Я <span class="text-orange-400">вайб-программер</span>, Python-разработчик, Fullstack Developer.
-                        </p>
-                        <ul class="mt-4 text-sm sm:text-base text-gray-300 space-y-2">
-                            <li><span class="text-orange-400">🔭</span> Сейчас я работаю над несколькими проектами</li>
-                            <li><span class="text-orange-400">🌱</span> В настоящее время изучаю питон</li>
-                            <li><span class="text-orange-400">⚡</span> Интересный факт - мне не нравится деловой язык, потому всю инфу я пишу так, будто ты мой друг</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Мои проекты -->
-            <section class="glass p-6 sm:p-10 rounded-3xl fade-in-up">
-                <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center">💻 Мои проекты</h2>
-                <div id="projects-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Кнопки проектов будут добавлены сюда с помощью JavaScript -->
-                </div>
-            </section>
-            
-            <!-- Ссылка на GitHub -->
-            <section class="glass p-6 sm:p-10 rounded-3xl fade-in-up">
-                <div class="text-center">
-                    <a href="https://github.com/dobrozor" target="_blank" rel="noopener noreferrer" class="text-xl font-bold text-orange-400 hover:underline transition-colors duration-300">
-                        Ещё больше моих проектов на моем гитхаб
-                    </a>
-                </div>
-            </section>
+    <div class="hud">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>СТАТУС: ВЕЧНЫЙ_ПРОГРУЗ</span>
+            <div class="hud-line"></div>
+            <span>ПОРТФОЛИОБОТ</span>
+        </div>
+        <div style="margin-top: auto; margin-bottom: auto; writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.5;">
+            ИЛЬЯ_ЗОРЕНКО ЭНТЕРТЕЙМЕНТ
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>КООРДЫ: <strong id="coord">0</strong></span>
+            <div class="hud-line"></div>
+            <span>СКОРОСТЬ: <strong id="vel">0.00</strong></span>
         </div>
     </div>
-    
-    <!-- Подключаем Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <div class="viewport" id="viewport">
+        <div class="world" id="world"></div>
+    </div>
+
+    <div class="scroll-proxy"></div>
 
     <script>
-        // Массив с проектами. Добавляй сюда новые объекты для новых проектов!
-        const projects = [
+        const SECTIONS = [
             {
-                title: "Продажник звезд на фанпее",
-                url: "https://github.com/dobrozor/FunPaySaller"
+                header: "ОБО МНЕ",
+                items: [
+                    { 
+                        type: 'text', 
+                        title: 'КТО Я', 
+                        desc: 'Привет, меня зовут Илья! Если коротко - ведущий, граф.дизайнер, вайб-кодер', 
+                        img: 'https://i.ibb.co/VY8yM3xM/photo-2300131587933276929-c.jpg', 
+                        link: 'https://t.me/dobrozor', 
+                        btnText: 'НАПИСАТЬ МНЕ' 
+                    },
+                    { type: 'text', title: 'СТЕК', desc: 'Gemini, Qwen, DeepSeek, Python, Photoshop, illutrator' },
+                    { type: 'text', title: 'ДЕЛАЮ', desc: 'Логотипы, баннеры, ботов в телеграмм, скрипты и автоматизирую работу' }
+                ]
             },
             {
-                title: "Бот для продажи звезд тг",
-                url: "https://github.com/dobrozor/tg_buy_stars"
+                header: "ДИЗАЙН",
+                items: [
+                    { type: 'image', title: 'Счастливые козочки', desc: 'Среди лугов, где солнце светит ярко, Пасутся козы, зная лишь покой. Для всей семьи нет лучшего подарка, Чем этот вкус — полезный и родной.', img: 'https://i.ibb.co/1t1kHL32/photo-5395499593145384959-y.jpg' },
+                    { type: 'image', title: 'Северный ветер', desc: 'Лед закипает под коньком каленым, «Северный ветер» — воля и азарт. Победа светит взглядам непреклонным, Сметает всё наш мощный, быстрый старт!', img: 'https://i.ibb.co/pBhcw1n1/photo-5352647939929007730-w.jpg' },
+                    { type: 'image', title: 'HGS', desc: 'Код пишет жизнь, экран огнем сияет, Команда HGS миры творит. Нас драйв и креативность окрыляют, И новый левел в сердце говорит!', img: 'https://i.ibb.co/DHBCgq0f/photo-5390888129709336317-y.jpg' }
+                ]
             },
             {
-                title: "Парсер для Профи.ру",
-                url: "https://github.com/dobrozor/parser_profiru"
-            },
-            {
-                title: "Скачиватель видос с сайтов",
-                url: "https://github.com/dobrozor/DOBRO_LOADER"
+                header: "РАЗРАБОТКА",
+                items: [
+                    { type: 'button', title: 'dobro_loader', desc: 'Это чудо-юдо скачивает видосы с защитой kinescope. Ему вообще пофиг, это clearkey или widiwine, а может вообще шифрования там и нет. Он всё расшифрует, скачает и ты будешь наслаждаться своим бесПЛАТНЫМ курсом.', link: 'https://github.com/dobrozor/DOBRO_LOADER' },
+                    { type: 'button', title: 'FunPaySeller', desc: 'Этот скрипт отлично автоматизирует продажу звезд телеграмма на фанпее. А главное мне не нужен твой крипто кошелек и скрипт ничего не ворует, простая и легкая автоматизация', link: 'https://github.com/dobrozor/FunPaySaller' },
+                    { type: 'button', title: 'TG_Stars', desc: 'А этот бот телеграмм продаст такие же звезды телеграмм, но уже не будет лутать никаких комиссий. И да, скрипт беслптаный с подробной инструкцией - продавать сможет начать буквально каждый', link: 'https://github.com/dobrozor/tg_buy_stars' }
+                ]
             }
         ];
 
-        // Функция для динамического создания кнопок
-        function generateProjectButtons() {
-            const container = document.getElementById('projects-container');
-            projects.forEach(project => {
-                const link = document.createElement('a');
-                link.href = project.url;
-                link.target = "_blank";
-                link.rel = "noopener noreferrer";
+        const CONFIG = {
+            zGap: 1000,
+            starCount: 150,
+            camSpeed: 3.5,
+            loopSize: 0 
+        };
 
-                const button = document.createElement('button');
-                button.textContent = project.title;
-                button.className = "w-full p-4 rounded-xl text-center font-semibold text-lg transition-transform transform hover:scale-105 shadow-xl glass bg-gradient-to-r from-orange-400 to-amber-500 text-gray-950 hover:from-orange-500 hover:to-amber-600";
-                
-                link.appendChild(button);
-                container.appendChild(link);
-            });
-        }
-        
-        // --- Логика 3D-сцены ---
-        let scene, camera, renderer;
-        let objects = [];
-        let controls;
+        const state = { scroll: 0, velocity: 0, targetSpeed: 0, mouseX: 0, mouseY: 0 };
+        const world = document.getElementById('world');
+        const items = [];
 
-        function init3D() {
-            const canvas = document.getElementById('bg-canvas');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            // Добавляем освещение
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-            scene.add(ambientLight);
+        function init() {
+            let currentZ = 0;
 
-            const pointLight = new THREE.PointLight(0xff8c00, 2); // Яркий оранжевый свет
-            pointLight.position.set(0, 0, 10);
-            scene.add(pointLight);
+            SECTIONS.forEach((section) => {
+                const hEl = document.createElement('div');
+                hEl.className = 'item';
+                hEl.innerHTML = `<div class="big-text">${section.header}</div>`;
+                items.push({ el: hEl, x: 0, y: 0, baseZ: -currentZ * CONFIG.zGap, type: 'header' });
+                world.appendChild(hEl);
+                currentZ++;
 
-            const directionalLight = new THREE.DirectionalLight(0xff8c00, 1);
-            directionalLight.position.set(5, 5, 5);
-            scene.add(directionalLight);
+                section.items.forEach((data, i) => {
+                    const el = document.createElement('div');
+                    el.className = 'item';
+                    
+                    let content = `
+                        <div class="card">
+                            <div class="card-header"><span>DOB_0${i+1}</span><span>//2026</span></div>
+                            <h2>${data.title}</h2>
+                            <p>${data.desc}</p>
+                    `;
+                    
+                    // КАРТИНКА (если есть поле img)
+                    if(data.img) {
+                        content += `<div class="card-img"><img src="${data.img}"></div>`;
+                    }
+                    
+                    // КНОПКА (если есть поле link)
+                    if(data.link) {
+                        const text = data.btnText || 'ОТКРЫТЬ ПРОЕКТ';
+                        content += `<a href="${data.link}" target="_blank" class="card-btn">${text}</a>`;
+                    }
+                    
+                    content += `</div>`;
+                    el.innerHTML = content;
 
-            // Создаем массив с различными геометриями для разнообразия
-            const geometries = [
-                new THREE.SphereGeometry(1.5, 32, 32),
-                new THREE.TorusGeometry(1, 0.4, 16, 100),
-                new THREE.IcosahedronGeometry(1.5, 0),
-                new THREE.BoxGeometry(2, 2, 2)
-            ];
-
-            // Создаем "стеклянный" материал
-            const material = new THREE.MeshPhysicalMaterial({
-                color: 0xff8c00, // Яркий оранжевый цвет
-                roughness: 0,
-                transmission: 1, // Прозрачность
-                thickness: 0.5,
-                metalness: 0.2,
-                clearcoat: 1,
-                clearcoatRoughness: 0.1,
-                opacity: 0.8,
-                transparent: true
+                    const angle = (i / 3) * Math.PI * 2;
+                    items.push({
+                        el, type: 'card',
+                        x: Math.cos(angle) * 380,
+                        y: Math.sin(angle) * 220,
+                        baseZ: -currentZ * CONFIG.zGap,
+                        rot: (Math.random() - 0.5) * 10
+                    });
+                    world.appendChild(el);
+                    currentZ++;
+                });
+                currentZ += 0.5;
             });
 
-            // Генерируем множество объектов со случайными параметрами
-            for (let i = 0; i < 50; i++) {
-                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
-                const obj = new THREE.Mesh(geometry, material);
-                
-                // Случайная позиция в пределах определенной области
-                obj.position.x = (Math.random() - 0.5) * 50;
-                obj.position.y = (Math.random() - 0.5) * 50;
-                obj.position.z = (Math.random() - 0.5) * 50;
+            CONFIG.loopSize = currentZ * CONFIG.zGap;
 
-                // Случайный масштаб
-                const scale = Math.random() * 2 + 0.5;
-                obj.scale.set(scale, scale, scale);
-
-                // Случайное начальное вращение
-                obj.rotation.x = Math.random() * Math.PI;
-                obj.rotation.y = Math.random() * Math.PI;
-
-                objects.push(obj);
-                scene.add(obj);
+            for (let i = 0; i < CONFIG.starCount; i++) {
+                const el = document.createElement('div');
+                el.className = 'star';
+                world.appendChild(el);
+                items.push({
+                    el, type: 'star',
+                    x: (Math.random() - 0.5) * 4000,
+                    y: (Math.random() - 0.5) * 4000,
+                    baseZ: -Math.random() * CONFIG.loopSize
+                });
             }
 
-            camera.position.z = 10;
-
-            // Управление камерой
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.screenSpacePanning = false;
+            window.addEventListener('mousemove', (e) => {
+                state.mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                state.mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+            });
         }
 
-        // Анимационный цикл
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
+        const lenis = new Lenis({ lerp: 0.08, infinite: true });
+        lenis.on('scroll', ({ scroll, velocity }) => {
+            state.scroll = scroll;
+            state.targetSpeed = velocity;
+        });
 
-            // Вращаем объекты
-            objects.forEach(obj => {
-                obj.rotation.x += 0.001;
-                obj.rotation.y += 0.001;
+        function raf(time) {
+            lenis.raf(time);
+            state.velocity += (state.targetSpeed - state.velocity) * 0.1;
+            
+            document.getElementById('coord').innerText = Math.floor(state.scroll);
+            document.getElementById('vel').innerText = Math.abs(state.velocity).toFixed(2);
+
+            const tiltX = state.mouseY * 5;
+            const tiltY = state.mouseX * 5;
+            world.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+
+            const cameraZ = state.scroll * CONFIG.camSpeed;
+
+            items.forEach(item => {
+                let relZ = item.baseZ + cameraZ;
+                let vizZ = ((relZ % CONFIG.loopSize) + CONFIG.loopSize) % CONFIG.loopSize;
+                
+                if (vizZ > 1000) vizZ -= CONFIG.loopSize;
+
+                let alpha = 1;
+                if (vizZ > 400) alpha = 1 - (vizZ - 400) / 600;
+                else if (vizZ < -3000) alpha = 1 + (vizZ + 3000) / 1000;
+                
+                alpha = Math.max(0, Math.min(1, alpha));
+                item.el.style.opacity = alpha;
+
+                if (vizZ > -1200 && vizZ < 600 && alpha > 0.5) {
+                    item.el.classList.add('active');
+                } else {
+                    item.el.classList.remove('active');
+                }
+
+                if (item.type === 'header') {
+                    const textEl = item.el.querySelector('.big-text');
+                    if (Math.abs(state.velocity) > 0.3) {
+                        const shift = state.velocity * 3;
+                        textEl.style.textShadow = `${shift}px 0 rgba(255,0,60,0.7), ${-shift}px 0 rgba(0,243,255,0.7)`;
+                    } else {
+                        textEl.style.textShadow = 'none';
+                    }
+                }
+
+                let transform = `translate3d(${item.x}px, ${item.y}px, ${vizZ}px)`;
+                if(item.rot) transform += ` rotateZ(${item.rot}deg)`;
+                
+                if(item.type === 'card') {
+                    const drift = Math.sin(time * 0.001 + item.x) * 15;
+                    transform += ` translateY(${drift}px)`;
+                }
+
+                item.el.style.transform = transform;
             });
 
-            renderer.render(scene, camera);
+            requestAnimationFrame(raf);
         }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        window.addEventListener('resize', onWindowResize, false);
-
-        // Запускаем всё при загрузке страницы
-        window.onload = function() {
-            generateProjectButtons();
-            init3D();
-            animate();
-        };
+        init();
+        requestAnimationFrame(raf);
     </script>
 </body>
 </html>
