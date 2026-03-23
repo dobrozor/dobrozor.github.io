@@ -2,10 +2,61 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>VPN Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Настройки</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .config-item { 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        button {
+            padding: 5px 15px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover { background-color: #0056b3; }
+        .text-value { font-family: monospace; background: #f4f4f4; padding: 2px 5px; }
+    </style>
 </head>
 <body>
+
     <h1>Настройки VPN</h1>
-    <p>Здесь будет ваш контент.</p>
+
+    <div class="config-item">
+        <button onclick="copyText('vless://Vibe_86140767@85.192.49.74:443?type=grpc&security=reality&fp=firefox&pbk=48B-yh9Wei6ejSdPVzrltOnA4fkoHT--ybXNkzmICWM&sni=ya.ru&sid=ffffffffff&spx=%2F#Vibe_86140767-🇫🇮Финляндия GS', this)">Скопировать</button>
+        <span class="text-value">vless://Vibe_86140767@85.192.49.74:443?type=grpc&security=reality&fp=firefox&pbk=48B-yh9Wei6ejSdPVzrltOnA4fkoHT--ybXNkzmICWM&sni=ya.ru&sid=ffffffffff&spx=%2F#Vibe_86140767-🇫🇮Финляндия GS</span>
+    </div>
+
+    <div class="config-item">
+        <button onclick="copyText('vless://Vibe_42141711@144.124.233.155:443?type=grpc&security=reality&fp=firefox&pbk=_plA41vohY8Aj9moRAFPucatR-rd0yaIFxsmRMETCgA&sni=ya.ru&sid=ffffffffff&spx=%2F#Vibe_42141711-🇳🇱Нидерланды GS', this)">Скопировать</button>
+        <span class="text-value">vless://Vibe_42141711@144.124.233.155:443?type=grpc&security=reality&fp=firefox&pbk=_plA41vohY8Aj9moRAFPucatR-rd0yaIFxsmRMETCgA&sni=ya.ru&sid=ffffffffff&spx=%2F#Vibe_42141711-🇳🇱Нидерланды GS</span>
+    </div>
+
+    <script>
+        function copyText(text, btn) {
+            // Копирование в буфер обмена
+            navigator.clipboard.writeText(text).then(() => {
+                // Визуальное подтверждение на кнопке
+                const originalText = btn.innerText;
+                btn.innerText = 'Готово!';
+                btn.style.backgroundColor = '#28a745';
+
+                // Возвращаем текст кнопки обратно через 2 секунды
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '#007bff';
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка при копировании: ', err);
+            });
+        }
+    </script>
+
 </body>
 </html>
