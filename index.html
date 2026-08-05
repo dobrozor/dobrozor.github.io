@@ -321,6 +321,8 @@
             let touchActive = false;
             let startY = 0;
             let startScroll = 0;
+            let lastMoveY = 0;
+            let lastMoveTime = 0;
 
             function isInsideScrollableInner(target) {
                 // let native scrolling work inside elements that opt into it (e.g. long card text)
@@ -333,6 +335,9 @@
                 touchActive = true;
                 startY = e.touches[0].clientY;
                 startScroll = state.scroll;
+                lastMoveY = startY;
+                lastMoveTime = performance.now();
+                state.touchActiveFlag = true;
                 dismissHint();
             }, { passive: true });
 
@@ -351,15 +356,36 @@
                 const target = startScroll + deltaY * TOUCH_SENSITIVITY;
                 lenis.scrollTo(target, { immediate: true, force: true });
 
+                // lenis reports velocity 0 for an immediate/instant jump, so the RGB-shift text
+                // effect (which reacts to state.velocity) would never trigger on touch.
+                // Estimate velocity ourselves from raw finger speed and feed it in directly.
+                const now = performance.now();
+                const dt = Math.max(now - lastMoveTime, 1);
+                const framePx = lastMoveY - t.clientY; // px moved since last touchmove (same sign convention as deltaY)
+                const instVelocity = (framePx / dt) * 16 * TOUCH_SENSITIVITY; // normalize to a ~per-frame value, matching lenis's wheel velocity scale
+                state.targetSpeed = instVelocity;
+                lastMoveY = t.clientY;
+                lastMoveTime = now;
+
                 e.preventDefault(); // stop iOS rubber-banding / pull-to-refresh from fighting the gesture
             }, { passive: false });
 
             window.addEventListener('touchend', () => {
                 touchActive = false;
+                state.touchActiveFlag = false;
+                state.targetSpeed = 0; // let the existing lerp smoothing ease the shift effect back out
                 // ease tilt back toward center when the finger lifts
                 state.mouseX = 0;
                 state.mouseY = 0;
             });
+
+            // if the finger stays down without moving (e.g. paused mid-swipe), decay the velocity
+            // manually so the effect doesn't get stuck "on" — lenis has no wheel-stop event to do this for us.
+            setInterval(() => {
+                if (touchActive && performance.now() - lastMoveTime > 100) {
+                    state.targetSpeed *= 0.8;
+                }
+            }, 80);
 
             window.addEventListener('scroll', dismissHint, { passive: true });
         }
