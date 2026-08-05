@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#030303">
-    <title>Илья Зоренко</title>
+    <title>///Илья//Зоренко///</title>
 
     <link rel="icon" href="https://avatars.githubusercontent.com/u/105580858?v=4" type="image/x-icon">
 
@@ -43,7 +43,7 @@
             overflow: hidden;
             width: 100%; height: 100%;
             overscroll-behavior: none;
-            touch-action: pan-y;
+            touch-action: none; /* the page has no real scrollable height — we drive the scroll manually via JS, this stops iOS/Android from trying (and failing) to pan/refresh natively */
         }
 
         .scanlines { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 50%); background-size: 100% 5px; pointer-events: none; z-index: 10; }
@@ -83,7 +83,7 @@
 
         .card-header { font-family: var(--font-code); color: var(--accent); font-size: 0.65rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; }
         .card h2 { font-size: clamp(1.1rem, 5vw, 1.5rem); margin: 0 0 0.75rem 0; line-height: 1.05; text-transform: uppercase; color: #fff; }
-        .card p { font-family: var(--font-code); font-size: clamp(0.75rem, 3.2vw, 0.85rem); line-height: 1.4; color: #bbb; margin: 0; overflow-y: auto; }
+        .card p { font-family: var(--font-code); font-size: clamp(0.75rem, 3.2vw, 0.85rem); line-height: 1.4; color: #bbb; margin: 0; overflow-y: auto; touch-action: pan-y; }
 
         .card-img { width: 100%; height: clamp(130px, 24vh, 180px); background: #111; margin: 0.85rem 0; border: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
         .card-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.4); transition: 0.5s; }
@@ -297,8 +297,11 @@
             bindPointerTilt();
         }
 
-        // unified pointer handling: mouse move OR touch drag both drive the tilt.
-        // Doesn't interfere with Lenis's vertical scroll gesture.
+        // unified pointer handling.
+        // Desktop: mousemove drives the tilt, mouse wheel drives scroll (handled natively by Lenis).
+        // Mobile: the page has no real scrollable height (overflow: hidden everywhere), so Lenis's
+        // native-touch-scroll has nothing to grab onto. We manually track the finger drag and feed
+        // the delta straight into lenis.scrollTo(), which is what actually drives the 3D camera.
         function bindPointerTilt() {
             const hint = document.getElementById('swipeHint');
             let hintDismissed = false;
@@ -314,17 +317,45 @@
                 dismissHint();
             });
 
-            // lightweight touch-based tilt: use the touch point relative to screen center,
-            // updated only while a finger is down, so it doesn't fight the scroll gesture.
-            window.addEventListener('touchstart', dismissHint, { passive: true });
+            const TOUCH_SENSITIVITY = 2.2; // px of finger drag -> scroll units; raise/lower to tune feel
+            let touchActive = false;
+            let startY = 0;
+            let startScroll = 0;
+
+            function isInsideScrollableInner(target) {
+                // let native scrolling work inside elements that opt into it (e.g. long card text)
+                return !!(target && target.closest && target.closest('.card p'));
+            }
+
+            window.addEventListener('touchstart', (e) => {
+                if (!e.touches || !e.touches[0]) return;
+                if (isInsideScrollableInner(e.target)) { touchActive = false; return; }
+                touchActive = true;
+                startY = e.touches[0].clientY;
+                startScroll = state.scroll;
+                dismissHint();
+            }, { passive: true });
+
             window.addEventListener('touchmove', (e) => {
                 if (!e.touches || !e.touches[0]) return;
                 const t = e.touches[0];
+
+                // tilt follows the finger regardless
                 state.mouseX = (t.clientX / window.innerWidth - 0.5) * 2;
                 state.mouseY = (t.clientY / window.innerHeight - 0.5) * 2;
-            }, { passive: true });
+
+                if (!touchActive) return;
+
+                // swiping up (finger moves up, deltaY negative) should move forward through the tunnel
+                const deltaY = startY - t.clientY;
+                const target = startScroll + deltaY * TOUCH_SENSITIVITY;
+                lenis.scrollTo(target, { immediate: true, force: true });
+
+                e.preventDefault(); // stop iOS rubber-banding / pull-to-refresh from fighting the gesture
+            }, { passive: false });
 
             window.addEventListener('touchend', () => {
+                touchActive = false;
                 // ease tilt back toward center when the finger lifts
                 state.mouseX = 0;
                 state.mouseY = 0;
