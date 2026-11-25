@@ -222,14 +222,7 @@
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию или описанию...">
       
-      <div class="filters" id="filterButtons">
-        <button class="filter-btn active" data-filter="all">Все</button>
-        <button class="filter-btn" data-filter="system">Система и утилиты</button>
-        <button class="filter-btn" data-filter="design">Графика и видео</button>
-        <button class="filter-btn" data-filter="dev">Разработка</button>
-        <button class="filter-btn" data-filter="media">Медиа и сеть</button>
-      </div>
-    </div>
+
 
     <!-- СЕТКА С ПРОГРАММАМИ -->
     <main class="grid" id="programsGrid">
@@ -253,63 +246,13 @@
       </article>
       <!-- === КОНЕЦ КАРТОЧКИ === -->
 
-      <article class="card" data-category="design">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">ShareX</h2>
-            <span class="badge free">Open Source</span>
-          </div>
-          <p class="card-desc">
-            Комбайн для скриншотов и записи экрана. Умеет распознавать текст (OCR), брать цвет пипеткой, лепить гифки и сразу заливать в облако.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span class="platform">Windows</span>
-          <a href="https://getsharex.com/" target="_blank" rel="noopener" class="btn-download">Скачать / Сайт</a>
-        </div>
-      </article>
-
-      <article class="card" data-category="media">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">qBittorrent</h2>
-            <span class="badge free">Open Source</span>
-          </div>
-          <p class="card-desc">
-            Легкий и быстрый торрент-клиент без встроенной рекламы, майнеров и лишнего мусора. Есть встроенный поиск по трекерам.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span class="platform">Win / Mac / Linux</span>
-          <a href="https://www.qbittorrent.org/" target="_blank" rel="noopener" class="btn-download">Скачать / Сайт</a>
-        </div>
-      </article>
-
-      <article class="card" data-category="dev">
-        <div>
-          <div class="card-header">
-            <h2 class="card-title">Notepad++</h2>
-            <span class="badge free">Open Source</span>
-          </div>
-          <p class="card-desc">
-            Незаменимый текстовый редактор для быстрого просмотра логов, правки конфигов, JSON и кода с подсветкой синтаксиса.
-          </p>
-        </div>
-        <div class="card-footer">
-          <span class="platform">Windows</span>
-          <a href="https://notepad-plus-plus.org/" target="_blank" rel="noopener" class="btn-download">Скачать / Сайт</a>
-        </div>
-      </article>
-
+      
     </main>
 
     <div id="emptyState" class="empty-state">
       По вашему запросу ничего не найдено.
     </div>
 
-    <footer>
-      Сделано вручную • Хостинг на GitHub Pages
-    </footer>
   </div>
 
   <!-- Скрипт для работы поиска и фильтров -->
